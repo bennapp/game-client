@@ -53,7 +53,6 @@ function create() {
   this.socket.on('playerMoved', function (playerInfo) {
     self.otherPlayers.getChildren().forEach(function (otherPlayer) {
       if (playerInfo.playerId === otherPlayer.playerId) {
-        otherPlayer.setRotation(playerInfo.rotation);
         otherPlayer.setPosition(playerInfo.x, playerInfo.y);
       }
     });
@@ -90,16 +89,16 @@ function addPlayer(self, playerInfo) {
   }
 }
 
-function addOtherPlayers(self, playerInfo) {
-  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'otherPlayer').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
-  if (playerInfo.team === 'blue') {
-    otherPlayer.setTint(0x0000ff);
-  } else {
-    otherPlayer.setTint(0xff0000);
-  }
-  otherPlayer.playerId = playerInfo.playerId;
-  self.otherPlayers.add(otherPlayer);
-}
+// function addOtherPlayers(self, playerInfo) {
+//   const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'otherPlayer').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+//   if (playerInfo.team === 'blue') {
+//     otherPlayer.setTint(0x0000ff);
+//   } else {
+//     otherPlayer.setTint(0xff0000);
+//   }
+//   otherPlayer.playerId = playerInfo.playerId;
+//   self.otherPlayers.add(otherPlayer);
+// }
 
 function update() {
   if (this.ship) {
