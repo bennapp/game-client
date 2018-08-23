@@ -1,10 +1,12 @@
-const GRID_DISTANCE = 10;
+const WIDTH = 1100;
+const HEIGHT = WIDTH;
+const GRID_DISTANCE = WIDTH / 11;
 
 var config = {
   type: Phaser.AUTO,
   parent: 'phaser-example',
-  width: 800,
-  height: 600,
+  width: WIDTH,
+  height: HEIGHT,
   physics: {
     default: 'arcade',
     arcade: {
@@ -80,6 +82,43 @@ function create() {
 
 function addPlayer(self, playerInfo) {
   self.ship = self.physics.add.sprite(playerInfo.x, playerInfo.y, 'ship').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+
+  self.ship.stopMoving = ()=> {
+    self.ship.isMoving = false;
+  };
+
+  self.ship.move = (direction)=> {
+    self.ship.isMoving = true;
+
+    if(direction === 'up'){
+      self.ship.body.y -= GRID_DISTANCE;
+    } else if(direction === 'left') {
+      self.ship.body.x -= GRID_DISTANCE;
+    } else if(direction == 'down') {
+      self.ship.body.y += GRID_DISTANCE;
+    } else if(direction == 'right') {
+      self.ship.body.x += GRID_DISTANCE;
+    }
+
+    setTimeout(self.ship.stopMoving, 250)
+  };
+
+  self.ship.moveUp = ()=> {
+    self.ship.move('up');
+  };
+
+  self.ship.moveLeft = ()=> {
+    self.ship.move('left');
+  };
+
+  self.ship.moveDown = ()=> {
+    self.ship.move('down');
+  };
+
+  self.ship.moveRight = ()=> {
+    self.ship.move('right');
+  };
+
   if (playerInfo.team === 'blue') {
     self.ship.setTint(0x0000ff);
   } else {
@@ -98,17 +137,18 @@ function addPlayer(self, playerInfo) {
 //   self.otherPlayers.add(otherPlayer);
 // }
 
-function update() {
+function update(time, delta) {
   if (this.ship) {
-
-    if (this.cursors.up.isDown || this.upKey.isDown) {
-      this.ship.body.y -= GRID_DISTANCE;
-    } else if (this.cursors.left.isDown || this.leftKey.isDown) {
-      this.ship.body.x -= GRID_DISTANCE;
-    } else if(this.cursors.down.isDown || this.downKey.isDown) {
-      this.ship.body.y += GRID_DISTANCE;
-    } else if(this.cursors.right.isDown || this.rightKey.isDown) {
-      this.ship.body.x += GRID_DISTANCE;
+    if (!this.ship.isMoving) {
+      if (this.cursors.up.isDown || this.upKey.isDown) {
+        this.ship.moveUp();
+      } else if (this.cursors.left.isDown || this.leftKey.isDown) {
+        this.ship.moveLeft();
+      } else if(this.cursors.down.isDown || this.downKey.isDown) {
+        this.ship.moveDown();
+      } else if(this.cursors.right.isDown || this.rightKey.isDown) {
+        this.ship.moveRight();
+      }
     }
   
     this.physics.world.wrap(this.ship, 5);
