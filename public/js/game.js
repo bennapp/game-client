@@ -1,3 +1,5 @@
+const GRID_DISTANCE = 10;
+
 var config = {
   type: Phaser.AUTO,
   parent: 'phaser-example',
@@ -60,7 +62,7 @@ function create() {
 
   this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' });
   this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
-  
+
   this.socket.on('scoreUpdate', function (scores) {
     self.blueScoreText.setText('Blue: ' + scores.blue);
     self.redScoreText.setText('Red: ' + scores.red);
@@ -76,15 +78,15 @@ function create() {
 }
 
 function addPlayer(self, playerInfo) {
-  self.ship = self.physics.add.image(playerInfo.x, playerInfo.y, 'ship').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+  self.ship = self.physics.add.sprite(playerInfo.x, playerInfo.y, 'ship').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
   if (playerInfo.team === 'blue') {
     self.ship.setTint(0x0000ff);
   } else {
     self.ship.setTint(0xff0000);
   }
-  self.ship.setDrag(100);
-  self.ship.setAngularDrag(100);
-  self.ship.setMaxVelocity(200);
+  // self.ship.setDrag(100);
+  // self.ship.setAngularDrag(100);
+  // self.ship.setMaxVelocity(200);
 }
 
 function addOtherPlayers(self, playerInfo) {
@@ -101,17 +103,13 @@ function addOtherPlayers(self, playerInfo) {
 function update() {
   if (this.ship) {
     if (this.cursors.left.isDown) {
-      this.ship.setAngularVelocity(-150);
-    } else if (this.cursors.right.isDown) {
-      this.ship.setAngularVelocity(150);
-    } else {
-      this.ship.setAngularVelocity(0);
-    }
-  
-    if (this.cursors.up.isDown) {
-      this.physics.velocityFromRotation(this.ship.rotation + 1.5, 100, this.ship.body.acceleration);
-    } else {
-      this.ship.setAcceleration(0);
+        this.ship.body.x -= GRID_DISTANCE;
+    } else if(this.cursors.right.isDown) {
+        this.ship.body.x += GRID_DISTANCE;
+    } else if(this.cursors.up.isDown) {
+        this.ship.body.y -= GRID_DISTANCE;
+    } else if(this.cursors.down.isDown) {
+        this.ship.body.y += GRID_DISTANCE;
     }
   
     this.physics.world.wrap(this.ship, 5);
