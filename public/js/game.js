@@ -59,6 +59,10 @@ function create() {
     });
   });
   this.cursors = this.input.keyboard.createCursorKeys();
+  self.upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+  self.leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+  self.downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+  self.rightKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
   this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' });
   this.redScoreText = this.add.text(584, 16, '', { fontSize: '32px', fill: '#FF0000' });
@@ -84,9 +88,6 @@ function addPlayer(self, playerInfo) {
   } else {
     self.ship.setTint(0xff0000);
   }
-  // self.ship.setDrag(100);
-  // self.ship.setAngularDrag(100);
-  // self.ship.setMaxVelocity(200);
 }
 
 function addOtherPlayers(self, playerInfo) {
@@ -102,14 +103,15 @@ function addOtherPlayers(self, playerInfo) {
 
 function update() {
   if (this.ship) {
-    if (this.cursors.left.isDown) {
-        this.ship.body.x -= GRID_DISTANCE;
-    } else if(this.cursors.right.isDown) {
-        this.ship.body.x += GRID_DISTANCE;
-    } else if(this.cursors.up.isDown) {
-        this.ship.body.y -= GRID_DISTANCE;
-    } else if(this.cursors.down.isDown) {
-        this.ship.body.y += GRID_DISTANCE;
+
+    if (this.cursors.up.isDown || this.upKey.isDown) {
+      this.ship.body.y -= GRID_DISTANCE;
+    } else if (this.cursors.left.isDown || this.leftKey.isDown) {
+      this.ship.body.x -= GRID_DISTANCE;
+    } else if(this.cursors.down.isDown || this.downKey.isDown) {
+      this.ship.body.y += GRID_DISTANCE;
+    } else if(this.cursors.right.isDown || this.rightKey.isDown) {
+      this.ship.body.x += GRID_DISTANCE;
     }
   
     this.physics.world.wrap(this.ship, 5);
@@ -117,15 +119,13 @@ function update() {
     // emit player movement
     var x = this.ship.x;
     var y = this.ship.y;
-    var r = this.ship.rotation;
-    if (this.ship.oldPosition && (x !== this.ship.oldPosition.x || y !== this.ship.oldPosition.y || r !== this.ship.oldPosition.rotation)) {
-      this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y, rotation: this.ship.rotation });
+    if (this.ship.oldPosition && (x !== this.ship.oldPosition.x || y !== this.ship.oldPosition.y)) {
+      this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y });
     }
     // save old position data
     this.ship.oldPosition = {
       x: this.ship.x,
       y: this.ship.y,
-      rotation: this.ship.rotation
     };
   }
 }
