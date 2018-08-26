@@ -22,6 +22,10 @@ var config = {
 };
 
 var game = new Phaser.Game(config);
+var player;
+var lastMoveTime = 0;
+var repeatMoveDelay = 100;
+var cam;
 
 function preload() {
   this.load.image('ship', 'assets/spaceShips_001.png');
@@ -59,6 +63,7 @@ function create() {
       }
     });
   });
+
   this.cursors = this.input.keyboard.createCursorKeys();
   self.upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
   self.leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
@@ -83,13 +88,7 @@ function create() {
 function addPlayer(self, playerInfo) {
   self.ship = self.physics.add.sprite(playerInfo.x, playerInfo.y, 'ship').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
 
-  self.ship.stopMoving = ()=> {
-    self.ship.isMoving = false;
-  };
-
-  self.ship.move = (direction)=> {
-    self.ship.isMoving = true;
-
+  self.ship.move = (time, direction)=> {
     if(direction === 'up'){
       self.ship.body.y -= GRID_DISTANCE;
     } else if(direction === 'left') {
@@ -100,23 +99,23 @@ function addPlayer(self, playerInfo) {
       self.ship.body.x += GRID_DISTANCE;
     }
 
-    setTimeout(self.ship.stopMoving, 250)
+    lastMoveTime = time;
   };
 
-  self.ship.moveUp = ()=> {
-    self.ship.move('up');
+  self.ship.moveUp = (time)=> {
+    self.ship.move(time, 'up');
   };
 
-  self.ship.moveLeft = ()=> {
-    self.ship.move('left');
+  self.ship.moveLeft = (time)=> {
+    self.ship.move(time, 'left');
   };
 
-  self.ship.moveDown = ()=> {
-    self.ship.move('down');
+  self.ship.moveDown = (time)=> {
+    self.ship.move(time, 'down');
   };
 
-  self.ship.moveRight = ()=> {
-    self.ship.move('right');
+  self.ship.moveRight = (time)=> {
+    self.ship.move(time, 'right');
   };
 
   if (playerInfo.team === 'blue') {
@@ -139,15 +138,15 @@ function addPlayer(self, playerInfo) {
 
 function update(time, delta) {
   if (this.ship) {
-    if (!this.ship.isMoving) {
+    if (time > lastMoveTime + repeatMoveDelay) {
       if (this.cursors.up.isDown || this.upKey.isDown) {
-        this.ship.moveUp();
+        this.ship.moveUp(time);
       } else if (this.cursors.left.isDown || this.leftKey.isDown) {
-        this.ship.moveLeft();
+        this.ship.moveLeft(time);
       } else if(this.cursors.down.isDown || this.downKey.isDown) {
-        this.ship.moveDown();
+        this.ship.moveDown(time);
       } else if(this.cursors.right.isDown || this.rightKey.isDown) {
-        this.ship.moveRight();
+        this.ship.moveRight(time);
       }
     }
   
