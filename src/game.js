@@ -1,3 +1,13 @@
+// TODO:
+// Accept state from websockets
+// create rocks on board
+// collision detection from rocks
+// move camera and get new state
+// refactor star into coin on grid from state
+// send player move over websockets
+// override state from network state
+// fix bug where lots of players start showing up
+
 const WIDTH = 1100;
 const HEIGHT = WIDTH;
 const GRID_DISTANCE = WIDTH / 11;
@@ -31,6 +41,7 @@ function preload() {
   this.load.image('ship', 'assets/spaceShips_001.png');
   this.load.image('otherPlayer', 'assets/enemyBlack5.png');
   this.load.image('star', 'assets/star_gold.png');
+  this.load.spritesheet('rocks', 'assets/sprites/RockTile.png', 192, 192);
 }
 
 function create() {
@@ -83,6 +94,9 @@ function create() {
       this.socket.emit('starCollected');
     }, null, self);
   });
+
+  self.physics.add.image(0, 0, 'rocks');
+  // sprite = self.add.sprite(40, 100, 'rocks');
 }
 
 function addPlayer(self, playerInfo) {
