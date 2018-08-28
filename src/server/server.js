@@ -1,5 +1,3 @@
-import './game.js'
-
 var express = require('express');
 var app = express();
 var server = require('http').Server(app);
@@ -15,11 +13,7 @@ var scores = {
   red: 0
 };
 
-app.use(express.static(__dirname + '/public'));
-
-app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/index.html');
-});
+app.use(express.static('dist'));
 
 io.on('connection', function (socket) {
   console.log('a user connected: ', socket.id);
