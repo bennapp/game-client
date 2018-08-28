@@ -8,4 +8,5 @@ install yarn
 
 ## To run:
 `yarn run server`
+
 `yarn run assets`
