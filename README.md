@@ -1,9 +1,11 @@
 # game-client
 Game client using phaser.js
 
+
 ## To start:
-`npm install --save express`
-`npm install --save socket.io`
+install yarn
+
 
 ## To run:
-`node server.js`
+`yarn run server`
+`yarn run assets`

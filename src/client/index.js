@@ -1,4 +1,17 @@
-const WIDTH = 1100;
+import 'phaser'
+import ioClient from 'socket.io-client'
+
+// TODO:
+// Accept state from websockets
+// create rocks on board
+// collision detection from rocks
+// move camera and get new state
+// refactor star into coin on grid from state
+// send player move over websockets
+// override state from network state
+// fix bug where lots of players start showing up
+
+const WIDTH = 600;
 const HEIGHT = WIDTH;
 const GRID_DISTANCE = WIDTH / 11;
 
@@ -31,11 +44,12 @@ function preload() {
   this.load.image('ship', 'assets/spaceShips_001.png');
   this.load.image('otherPlayer', 'assets/enemyBlack5.png');
   this.load.image('star', 'assets/star_gold.png');
+  // this.load.spritesheet('rocks', 'assets/sprites/RockTile.png', 192, 192);
 }
 
 function create() {
   var self = this;
-  this.socket = io();
+  this.socket = ioClient('http://localhost:8081');
   this.otherPlayers = this.physics.add.group();
   this.socket.on('currentPlayers', function (players) {
     Object.keys(players).forEach(function (id) {
@@ -83,6 +97,9 @@ function create() {
       this.socket.emit('starCollected');
     }, null, self);
   });
+
+  // self.physics.add.image(0, 0, 'rocks');
+  // sprite = self.add.sprite(40, 100, 'rocks');
 }
 
 function addPlayer(self, playerInfo) {
@@ -90,13 +107,13 @@ function addPlayer(self, playerInfo) {
 
   self.ship.move = (time, direction)=> {
     if(direction === 'up'){
-      self.ship.body.y -= GRID_DISTANCE;
+      self.ship.y -= GRID_DISTANCE;
     } else if(direction === 'left') {
-      self.ship.body.x -= GRID_DISTANCE;
+      self.ship.x -= GRID_DISTANCE;
     } else if(direction == 'down') {
-      self.ship.body.y += GRID_DISTANCE;
+      self.ship.y += GRID_DISTANCE;
     } else if(direction == 'right') {
-      self.ship.body.x += GRID_DISTANCE;
+      self.ship.x += GRID_DISTANCE;
     }
 
     lastMoveTime = time;
@@ -125,20 +142,20 @@ function addPlayer(self, playerInfo) {
   }
 }
 
-// function addOtherPlayers(self, playerInfo) {
-//   const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'otherPlayer').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
-//   if (playerInfo.team === 'blue') {
-//     otherPlayer.setTint(0x0000ff);
-//   } else {
-//     otherPlayer.setTint(0xff0000);
-//   }
-//   otherPlayer.playerId = playerInfo.playerId;
-//   self.otherPlayers.add(otherPlayer);
-// }
+function addOtherPlayers(self, playerInfo) {
+  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'otherPlayer').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+  if (playerInfo.team === 'blue') {
+    otherPlayer.setTint(0x0000ff);
+  } else {
+    otherPlayer.setTint(0xff0000);
+  }
+  otherPlayer.playerId = playerInfo.playerId;
+  self.otherPlayers.add(otherPlayer);
+}
 
 function update(time, delta) {
   if (this.ship) {
-    if (time > lastMoveTime + repeatMoveDelay) {
+    if (time > (lastMoveTime + repeatMoveDelay)) {
       if (this.cursors.up.isDown || this.upKey.isDown) {
         this.ship.moveUp(time);
       } else if (this.cursors.left.isDown || this.leftKey.isDown) {
