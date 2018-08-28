@@ -1,5 +1,7 @@
 import 'phaser'
 import ioClient from 'socket.io-client'
+import { Player } from './el/player'
+import { WIDTH, HEIGHT } from './constants'
 
 // TODO:
 // Accept state from websockets
@@ -10,10 +12,6 @@ import ioClient from 'socket.io-client'
 // send player move over websockets
 // override state from network state
 // fix bug where lots of players start showing up
-
-const WIDTH = 600;
-const HEIGHT = WIDTH;
-const GRID_DISTANCE = WIDTH / 11;
 
 var config = {
   type: Phaser.AUTO,
@@ -36,8 +34,6 @@ var config = {
 
 var game = new Phaser.Game(config);
 var player;
-var lastMoveTime = 0;
-var repeatMoveDelay = 100;
 var cam;
 
 function preload() {
@@ -100,46 +96,72 @@ function create() {
 
   // self.physics.add.image(0, 0, 'rocks');
   // sprite = self.add.sprite(40, 100, 'rocks');
+
+  // rawGame state is a string, representing the state of the world the player has loaded
+  // the string is JSON formatted
+  // `loadedLocation` will be the start of the top left corner of what the player has loaded.
+  // The player will see a smaller subset of what they have loaded; their 'vision' will be smaller
+  // than their `loaded` vision.
+  // I think it would be nice to have coordinates be there 'true' coordinate position, as in ignoring subworlds.
+  // The coordinates are key values pretty similar to our redis-store.
+  // The objects can be keyed by their type. I think this will allow the client to quickly iterate over objects and be
+  // able to easily instantiate them in the client's state.
+  // I think the client should update the server / backend with the state of its player but should only be notified form
+  // the server of the state of the player when the server detects the client's state of the player is wrong / needs to be corrected.
+  // This way, the server is sending gameStates to the client that would 'undo' the client's previous move.
+  self.updateGameState = (jsonGameState) => {
+    self.loadedLocation = jsonGameState['loadedLocation'];
+    // delete all coordinates outside of 'loaded vision' determined by fixed grid size and `loadedLocation`
+    // merge all objects.
+    // Create new objects from `objects` key.
+    // Update existing objects from `objects` key.
+    // Delete existing objects that are now missing from `objects` key.
+    // update all coordinates with new objects
+  };
+  self.gameStateUpdate = (rawGameState) => {
+    jsonGameState = JSON.parse(rawGameState);
+    // stubbed for now
+    jsonGameState = {
+      loadedLocation: "0,0",
+      coordinates: {
+        "0,1": "coin:33",
+        "0,2": "player:1",
+        "0,3": "rock:-1", // is this -1 for now?
+      },
+      objects: {
+        player: {
+          "1": {
+            hp: "10",
+            alive: "true",
+            coinCount: "22",
+          },
+          "2": {
+            hp: "7",
+            alive: "true"
+          }
+        },
+        coin: {
+          "33": {
+            amount: "11",
+          },
+          "2": {
+            amount: "3"
+          }
+        },
+        rock: "", // is this just an empty string for now?
+      },
+    };
+    // self.updateGameState(jsonGameState)
+    // this 'upserts' (update or inserts) new objects
+    // self.loadObjects(jsonGameState["objects"])
+    // set a variable as the loaded location
+    // self.setLoadedLocation(jsonGameState['loadedLocation'])
+  };
+  this.socket.on('stateUpdate', self.gameStateUpdate)
 }
 
 function addPlayer(self, playerInfo) {
-  self.ship = self.physics.add.sprite(playerInfo.x, playerInfo.y, 'ship').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
-
-  self.ship.move = (time, direction)=> {
-    if(direction === 'up'){
-      self.ship.y -= GRID_DISTANCE;
-    } else if(direction === 'left') {
-      self.ship.x -= GRID_DISTANCE;
-    } else if(direction == 'down') {
-      self.ship.y += GRID_DISTANCE;
-    } else if(direction == 'right') {
-      self.ship.x += GRID_DISTANCE;
-    }
-
-    lastMoveTime = time;
-  };
-
-  self.ship.moveUp = (time)=> {
-    self.ship.move(time, 'up');
-  };
-
-  self.ship.moveLeft = (time)=> {
-    self.ship.move(time, 'left');
-  };
-
-  self.ship.moveDown = (time)=> {
-    self.ship.move(time, 'down');
-  };
-
-  self.ship.moveRight = (time)=> {
-    self.ship.move(time, 'right');
-  };
-
-  if (playerInfo.team === 'blue') {
-    self.ship.setTint(0x0000ff);
-  } else {
-    self.ship.setTint(0xff0000);
-  }
+  self.ship = new Player(self, playerInfo);
 }
 
 function addOtherPlayers(self, playerInfo) {
@@ -155,17 +177,18 @@ function addOtherPlayers(self, playerInfo) {
 
 function update(time, delta) {
   if (this.ship) {
-    if (time > (lastMoveTime + repeatMoveDelay)) {
-      if (this.cursors.up.isDown || this.upKey.isDown) {
-        this.ship.moveUp(time);
-      } else if (this.cursors.left.isDown || this.leftKey.isDown) {
-        this.ship.moveLeft(time);
-      } else if(this.cursors.down.isDown || this.downKey.isDown) {
-        this.ship.moveDown(time);
-      } else if(this.cursors.right.isDown || this.rightKey.isDown) {
-        this.ship.moveRight(time);
-      }
+
+    let direction;
+    if (this.cursors.up.isDown || this.upKey.isDown) {
+      direction = 'up'
+    } else if (this.cursors.left.isDown || this.leftKey.isDown) {
+      direction = 'left'
+    } else if(this.cursors.down.isDown || this.downKey.isDown) {
+      direction = 'down'
+    } else if(this.cursors.right.isDown || this.rightKey.isDown) {
+      direction = 'right'
     }
+    this.ship.move(time, direction);
   
     this.physics.world.wrap(this.ship, 5);
 
