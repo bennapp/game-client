@@ -1,7 +1,9 @@
 import 'phaser'
 import ioClient from 'socket.io-client'
+import { WIDTH, HEIGHT, GRID_DISTANCE } from './constants'
+
 import { Player } from './el/player'
-import { WIDTH, HEIGHT } from './constants'
+import { World } from './gs/world'
 
 // TODO:
 // Accept state from websockets
@@ -19,8 +21,8 @@ var config = {
   width: WIDTH,
   height: HEIGHT,
   physics: {
-    default: 'matter',
-    matter: {
+    default: 'arcade',
+    arcade: {
       debug: true,
       gravity: {
         x: 0,
@@ -38,13 +40,14 @@ var config = {
 var game = new Phaser.Game(config);
 var player;
 var cam;
+var world;
 
 function preload() {
   // TODO WEBPACK ASSETS
   this.load.image('ship', 'assets/spaceShips_001.png');
   this.load.image('otherPlayer', 'assets/enemyBlack5.png');
   this.load.image('star', 'assets/star_gold.png');
-  this.load.spritesheet('rocks', 'assets/sprites/RockTile.png', {frameWidth: 192, frameHeight: 192});
+  this.load.spritesheet('rocks', 'assets/sprites/Rock Pile.png', {frameWidth: 192, frameHeight: 192});
 }
 
 function create() {
@@ -91,15 +94,11 @@ function create() {
 
   this.socket.on('starLocation', function (starLocation) {
     // if (self.star) self.star.destroy();
-    // self.star = self.matter.add.image(starLocation.x, starLocation.y, 'star');
-    // self.matter.add.overlap(self.ship, self.star, function () {
+    // self.star = self.arcade.add.image(starLocation.x, starLocation.y, 'star');
+    // self.arcade.add.overlap(self.ship, self.star, function () {
     //   this.socket.emit('starCollected');
     // }, null, self);
   });
-
-  self.rocks = self.matter.add.sprite(200, 200, 'rocks');
-  self.rocks.body.isStatic = true;
-
 
   // rawGame state is a string, representing the state of the world the player has loaded
   // the string is JSON formatted
@@ -161,7 +160,9 @@ function create() {
     // set a variable as the loaded location
     // self.setLoadedLocation(jsonGameState['loadedLocation'])
   };
-  this.socket.on('stateUpdate', self.gameStateUpdate)
+  this.socket.on('stateUpdate', self.gameStateUpdate);
+
+  self.world = new World(self);
 }
 
 function addPlayer(self, playerInfo) {
@@ -181,17 +182,20 @@ function addOtherPlayers(self, playerInfo) {
 
 function update(time, delta) {
   if (this.ship) {
-    let direction;
+    let direction = null;
     if (this.cursors.up.isDown || this.upKey.isDown) {
-      direction = 'up'
+      direction = 'up';
     } else if (this.cursors.left.isDown || this.leftKey.isDown) {
-      direction = 'left'
+      direction = 'left';
     } else if(this.cursors.down.isDown || this.downKey.isDown) {
-      direction = 'down'
+      direction = 'down';
     } else if(this.cursors.right.isDown || this.rightKey.isDown) {
-      direction = 'right'
+      direction = 'right';
     }
-    this.ship.move(time, direction);
+
+    if (direction) {
+      this.world.move(this.ship, time, direction);
+    }
 
     // emit player movement
     var x = this.ship.x;
