@@ -1,19 +1,8 @@
 import 'phaser'
 import ioClient from 'socket.io-client'
-import { WIDTH, HEIGHT, GRID_DISTANCE } from './constants'
+import { WIDTH, HEIGHT } from './constants'
 
-import { Player } from './el/player'
 import { World } from './gs/world'
-
-// TODO:
-// Accept state from websockets
-// create rocks on board
-// collision detection from rocks
-// move camera and get new state
-// refactor star into coin on grid from state
-// send player move over websockets
-// override state from network state
-// fix bug where lots of players start showing up
 
 var config = {
   type: Phaser.AUTO,
@@ -52,6 +41,7 @@ function preload() {
 
 function create() {
   var self = this;
+  self.world = new World(self);
   this.socket = ioClient('http://localhost:8081');
   this.socket.on('currentPlayers', function (players) {
     Object.keys(players).forEach(function (id) {
@@ -86,10 +76,10 @@ function create() {
   self.downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
   self.rightKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
-  this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' });
+  // this.blueScoreText = this.add.text(16, 16, '', { fontSize: '32px', fill: '#0000FF' });
 
   this.socket.on('scoreUpdate', function (scores) {
-    self.blueScoreText.setText('CoinCount: ' + scores.blue);
+    // self.blueScoreText.setText('CoinCount: ' + scores.blue);
   });
 
   this.socket.on('starLocation', function (starLocation) {
@@ -122,51 +112,68 @@ function create() {
     // update all coordinates with new objects
   };
   self.gameStateUpdate = (rawGameState) => {
-    jsonGameState = JSON.parse(rawGameState);
-    // stubbed for now
-    jsonGameState = {
-      loadedLocation: "0,0",
-      coordinates: {
-        "0,1": "coin:33",
-        "0,2": "player:1",
-        "0,3": "rock:-1", // is this -1 for now?
-      },
-      objects: {
-        player: {
-          "1": {
-            hp: "10",
-            alive: "true",
-            coinCount: "22",
-          },
-          "2": {
-            hp: "7",
-            alive: "true"
-          }
-        },
-        coin: {
-          "33": {
-            amount: "11",
-          },
-          "2": {
-            amount: "3"
-          }
-        },
-        rock: "", // is this just an empty string for now?
-      },
-    };
-    // self.updateGameState(jsonGameState)
-    // this 'upserts' (update or inserts) new objects
-    // self.loadObjects(jsonGameState["objects"])
-    // set a variable as the loaded location
-    // self.setLoadedLocation(jsonGameState['loadedLocation'])
+    let jsonGameState = JSON.parse(rawGameState);
+    this.world.setState(jsonGameState);
   };
   this.socket.on('stateUpdate', self.gameStateUpdate);
 
-  self.world = new World(self);
+  let stubbedJsonGameState = {
+    loadedLocation: "0,0",
+    coordinates: {
+      // "0,1": { type: 'coin', id: '33' },
+      // "0,2": { type: 'player', id: '1' },
+      "0,0": { type: 'rock', id: '-1' },
+      "2,2": { type: 'rock', id: '-1' },
+    },
+    objects: {
+      // player: {
+      //   "1": {
+      //     hp: "10",
+      //     alive: "true",
+      //     coinCount: "22",
+      //   },
+      //   "2": {
+      //     hp: "7",
+      //     alive: "true"
+      //   }
+      // },
+      // coin: {
+      //   "33": {
+      //     amount: "11",
+      //   },
+      //   "2": {
+      //     amount: "3"
+      //   }
+      // },
+      rock: {
+        "-1": {}
+      }
+    },
+  };
+
+  this.world.setState(stubbedJsonGameState)
+
+
+  stubbedJsonGameState = {
+    loadedLocation: "0,0",
+    coordinates: {
+      "0,0": { type: 'rock', id: '-1' },
+      "3,3": { type: 'rock', id: '-1' },
+    },
+    objects: {
+      rock: {
+        "-1": {}
+      }
+    },
+  };
+
+  this.world.setState(stubbedJsonGameState)
 }
 
 function addPlayer(self, playerInfo) {
-  self.ship = new Player(self, playerInfo);
+  // Refactor later when we are ready to handle first response from server,
+  // should set gamestate and player location
+  self.ship = self.world.player;
 }
 
 function addOtherPlayers(self, playerInfo) {

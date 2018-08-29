@@ -1,8 +1,8 @@
-import { GRID_DISTANCE } from '../constants'
+import {GRID_DISTANCE, GRID_OFFSET} from '../constants'
 
 class Player {
   constructor(game, attributes) {
-    this.sprite = game.physics.add.sprite(attributes.x, attributes.y, 'ship')
+    this.sprite = game.physics.add.sprite(attributes.x + GRID_OFFSET, attributes.y + GRID_OFFSET, 'ship')
       .setDisplaySize(GRID_DISTANCE, GRID_DISTANCE);
 
     if (attributes.team === 'blue') {
