@@ -2,7 +2,7 @@ import { GRID_DISTANCE } from '../constants'
 
 class Player {
   constructor(game, attributes) {
-    this.sprite = game.physics.add.sprite(attributes.x, attributes.y, 'ship').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+    this.sprite = game.matter.add.sprite(attributes.x, attributes.y, 'ship').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
     this.lastMoveTime = 0;
     this.repeatMoveDelay = 100;
 

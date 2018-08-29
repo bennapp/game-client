@@ -19,10 +19,13 @@ var config = {
   width: WIDTH,
   height: HEIGHT,
   physics: {
-    default: 'arcade',
-    arcade: {
-      debug: false,
-      gravity: { y: 0 }
+    default: 'matter',
+    matter: {
+      debug: true,
+      gravity: {
+        x: 0,
+        y: 0
+      }
     }
   },
   scene: {
@@ -37,16 +40,16 @@ var player;
 var cam;
 
 function preload() {
+  // TODO WEBPACK ASSETS
   this.load.image('ship', 'assets/spaceShips_001.png');
   this.load.image('otherPlayer', 'assets/enemyBlack5.png');
   this.load.image('star', 'assets/star_gold.png');
-  // this.load.spritesheet('rocks', 'assets/sprites/RockTile.png', 192, 192);
+  this.load.spritesheet('rocks', 'assets/sprites/RockTile.png', {frameWidth: 192, frameHeight: 192});
 }
 
 function create() {
   var self = this;
   this.socket = ioClient('http://localhost:8081');
-  this.otherPlayers = this.physics.add.group();
   this.socket.on('currentPlayers', function (players) {
     Object.keys(players).forEach(function (id) {
       if (players[id].playerId === self.socket.id) {
@@ -60,18 +63,18 @@ function create() {
     addOtherPlayers(self, playerInfo);
   });
   this.socket.on('disconnect', function (playerId) {
-    self.otherPlayers.getChildren().forEach(function (otherPlayer) {
-      if (playerId === otherPlayer.playerId) {
-        otherPlayer.destroy();
-      }
-    });
+    // self.otherPlayers.getChildren().forEach(function (otherPlayer) {
+    //   if (playerId === otherPlayer.playerId) {
+    //     otherPlayer.destroy();
+    //   }
+    // });
   });
   this.socket.on('playerMoved', function (playerInfo) {
-    self.otherPlayers.getChildren().forEach(function (otherPlayer) {
-      if (playerInfo.playerId === otherPlayer.playerId) {
-        otherPlayer.setPosition(playerInfo.x, playerInfo.y);
-      }
-    });
+    // self.otherPlayers.getChildren().forEach(function (otherPlayer) {
+    //   if (playerInfo.playerId === otherPlayer.playerId) {
+    //     otherPlayer.setPosition(playerInfo.x, playerInfo.y);
+    //   }
+    // });
   });
 
   this.cursors = this.input.keyboard.createCursorKeys();
@@ -87,15 +90,16 @@ function create() {
   });
 
   this.socket.on('starLocation', function (starLocation) {
-    if (self.star) self.star.destroy();
-    self.star = self.physics.add.image(starLocation.x, starLocation.y, 'star');
-    self.physics.add.overlap(self.ship, self.star, function () {
-      this.socket.emit('starCollected');
-    }, null, self);
+    // if (self.star) self.star.destroy();
+    // self.star = self.matter.add.image(starLocation.x, starLocation.y, 'star');
+    // self.matter.add.overlap(self.ship, self.star, function () {
+    //   this.socket.emit('starCollected');
+    // }, null, self);
   });
 
-  // self.physics.add.image(0, 0, 'rocks');
-  // sprite = self.add.sprite(40, 100, 'rocks');
+  self.rocks = self.matter.add.sprite(200, 200, 'rocks');
+  self.rocks.body.isStatic = true;
+
 
   // rawGame state is a string, representing the state of the world the player has loaded
   // the string is JSON formatted
@@ -165,19 +169,18 @@ function addPlayer(self, playerInfo) {
 }
 
 function addOtherPlayers(self, playerInfo) {
-  const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'otherPlayer').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
-  if (playerInfo.team === 'blue') {
-    otherPlayer.setTint(0x0000ff);
-  } else {
-    otherPlayer.setTint(0xff0000);
-  }
-  otherPlayer.playerId = playerInfo.playerId;
-  self.otherPlayers.add(otherPlayer);
+  // const otherPlayer = self.add.sprite(playerInfo.x, playerInfo.y, 'otherPlayer').setOrigin(0.5, 0.5).setDisplaySize(53, 40);
+  // if (playerInfo.team === 'blue') {
+  //   otherPlayer.setTint(0x0000ff);
+  // } else {
+  //   otherPlayer.setTint(0xff0000);
+  // }
+  // otherPlayer.playerId = playerInfo.playerId;
+  //self.otherPlayers.add(otherPlayer);
 }
 
 function update(time, delta) {
   if (this.ship) {
-
     let direction;
     if (this.cursors.up.isDown || this.upKey.isDown) {
       direction = 'up'
@@ -189,8 +192,6 @@ function update(time, delta) {
       direction = 'right'
     }
     this.ship.move(time, direction);
-  
-    this.physics.world.wrap(this.ship, 5);
 
     // emit player movement
     var x = this.ship.x;

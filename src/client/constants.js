@@ -1,6 +1,8 @@
-const WIDTH = 600;
+const WIDTH = 500;
 const HEIGHT = WIDTH;
-const GRID_DISTANCE = WIDTH / 11;
+const NUM_CELLS = 5
+const GRID_DISTANCE = WIDTH / NUM_CELLS;
+
 
 export {
   WIDTH,
