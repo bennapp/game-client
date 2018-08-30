@@ -103,8 +103,7 @@ function create() {
       y: '2',
     },
     coordinates: {
-      // "0,1": { type: 'coin', id: '33' },
-      // "0,2": { type: 'player', id: '1' },
+      "0,1": { type: 'coin', id: '33' },
       "3,4": { type: 'rock', id: '-1' },
       "1,1": { type: 'rock', id: '-1' },
     },
@@ -120,35 +119,38 @@ function create() {
       //     alive: "true"
       //   }
       // },
-      // coin: {
-      //   "33": {
-      //     amount: "11",
-      //   },
-      //   "2": {
-      //     amount: "3"
-      //   }
-      // },
+      coin: {
+        "33": {
+          amount: "11",
+        },
+      },
       rock: {
         "-1": {}
       }
     },
   };
 
-  this.world.setState(stubbedJsonGameState)
+  this.world.setState(stubbedJsonGameState);
 
   stubbedJsonGameState = {
     coordinates: {
+      "0,1": { type: 'coin', id: '33' },
       "4,4": { type: 'rock', id: '-1' },
       "3,4": { type: 'rock', id: '-1' },
     },
     objects: {
+      coin: {
+        "33": {
+          amount: "11",
+        },
+      },
       rock: {
         "-1": {}
       }
     },
   };
 
-  this.world.setState(stubbedJsonGameState)
+  this.world.setState(stubbedJsonGameState);
 
   stubbedJsonGameState = {
     globalPlayerLocation: {
@@ -156,16 +158,22 @@ function create() {
       y: '3',
     },
     coordinates: {
+      "0,1": { type: 'coin', id: '33' },
       "4,4": { type: 'rock', id: '-1' },
       "3,4": { type: 'rock', id: '-1' },
     },
     objects: {
+      coin: {
+        "33": {
+          amount: "11",
+        },
+      },
       rock: {
         "-1": {}
       }
     },
   };
-  this.world.setState(stubbedJsonGameState)
+  this.world.setState(stubbedJsonGameState);
 }
 
 function addPlayer(self, playerInfo) {

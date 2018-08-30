@@ -1,13 +1,13 @@
 import { GRID_DISTANCE, GRID_OFFSET, NUM_CELLS } from '../constants'
 
-class Rock {
+class Coin {
   constructor(game, attributes) {
     this.coord = attributes.coord;
     let location = this.spriteLocationFrom(attributes.globalPlayerLocation);
 
-    this.type = 'rock';
+    this.type = 'coin';
 
-    this.sprite = game.physics.add.sprite(location.x, location.y, 'rocks')
+    this.sprite = game.physics.add.sprite(location.x, location.y, 'star')
       .setDisplaySize(GRID_DISTANCE, GRID_DISTANCE);
   }
 
@@ -39,4 +39,4 @@ class Rock {
   }
 }
 
-export { Rock };
+export { Coin };

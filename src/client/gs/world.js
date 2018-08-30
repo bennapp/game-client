@@ -22,11 +22,24 @@ class World {
     this.mapStore.setState(jsonGameState, this.globalPlayerLocation);
   }
 
-  isValidMove(position) {
-    // right now we only add rocks so we just check if this is empty
+  objectFromPosition(position) {
     let x = this.globalPlayerLocation.x + position.x;
     let y = this.globalPlayerLocation.y + position.y;
-    return !this.mapStore.store[`${x},${y}`];
+    return this.mapStore.store[`${x},${y}`];
+  }
+
+  isValidMove(nextObject) {
+    // no object, next move is empty
+    if (!nextObject) {
+      return true;
+    }
+
+    if (nextObject.type === 'rock') {
+      return false;
+    }
+
+    // defaults to true
+    return true;
   }
 
   move(player, time, direction) {
@@ -48,13 +61,19 @@ class World {
           break;
       }
 
-      if (this.isValidMove(nextPosition)) {
+      let nextObject = this.objectFromPosition(nextPosition);
+
+      if (this.isValidMove(nextObject)) {
         this.globalPlayerLocation.x += nextPosition.x;
         this.globalPlayerLocation.y += nextPosition.y;
 
         this.moveAllWorldObjects();
 
         this.lastMoveTime = time;
+      }
+
+      if (nextObject && nextObject.type == 'coin') {
+        nextObject.destroy();
       }
     }
   }

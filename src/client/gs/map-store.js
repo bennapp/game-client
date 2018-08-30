@@ -1,5 +1,6 @@
 import {GRID_DISTANCE, NUM_CELLS} from "../constants";
 import {Rock} from "../el/rock";
+import {Coin} from "../el/coin";
 
 class MapStore {
   constructor(game){
@@ -52,8 +53,10 @@ class MapStore {
     let coordArray = coordString.split(',').map(Number);
     let coord = { x: coordArray[0], y: coordArray[1] };
     let object;
-    if (type == 'rock') {
+    if (type === 'rock') {
       object = new Rock(this.game, { coord: coord, globalPlayerLocation: globalPlayerLocation });
+    } else if (type === 'coin') {
+      object = new Coin(this.game, { coord: coord, globalPlayerLocation: globalPlayerLocation });
     }
 
     return object
@@ -61,6 +64,7 @@ class MapStore {
 
   swapStores() {
     let oldStore = this.store;
+
     this.store = this.newStore;
 
     this.cleanUpStore(oldStore);
