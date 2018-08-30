@@ -3,6 +3,7 @@ import ioClient from 'socket.io-client'
 import { WIDTH, HEIGHT } from './constants'
 
 import { World } from './gs/world'
+import {Player} from "./el/player";
 
 var config = {
   type: Phaser.AUTO,
@@ -176,10 +177,10 @@ function create() {
   this.world.setState(stubbedJsonGameState);
 }
 
-function addPlayer(self, playerInfo) {
+function addPlayer(self) {
   // Refactor later when we are ready to handle first response from server,
   // should set gamestate and player location
-  self.ship = self.world.player;
+  self.ship = new Player(self);
 }
 
 function addOtherPlayers(self, playerInfo) {

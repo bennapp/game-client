@@ -4,8 +4,6 @@ import { MapStore } from './map-store'
 class World {
   constructor(game) {
     // This will be refactored later when we have game state passed by websockets
-    this.player = new Player(game, { x: 200, y: 200 });
-
     this.lastMoveTime = 0;
     this.repeatMoveDelay = 100;
 

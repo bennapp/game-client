@@ -1,19 +1,28 @@
-import {GRID_DISTANCE, GRID_OFFSET} from '../constants'
+import {GRID_DISTANCE, GRID_OFFSET, NUM_CELLS} from '../constants'
 
 class Player {
-  constructor(game, attributes) {
-    this.sprite = game.physics.add.sprite(attributes.x + GRID_OFFSET, attributes.y + GRID_OFFSET, 'ship')
-      .setDisplaySize(GRID_DISTANCE, GRID_DISTANCE);
+  constructor(game) {
+    let location = this.spriteLocationFrom();
 
-    if (attributes.team === 'blue') {
-      this.sprite.setTint(0x0000ff);
-    } else {
-      this.sprite.setTint(0xff0000);
-    }
+    // this class is the user's player
+    // we will probably want to make another one for other players
+    this.type = 'client-player';
+
+    this.sprite = game.physics.add.sprite(location.x, location.y, 'ship')
+      .setDisplaySize(GRID_DISTANCE, GRID_DISTANCE);
   }
 
   destroy() {
     this.sprite.destroy();
+  }
+
+  spriteLocationFrom() {
+    let distanceFromCenter = Math.floor(NUM_CELLS / 2);
+
+    return {
+      x: (distanceFromCenter * GRID_DISTANCE) + GRID_OFFSET,
+      y: (distanceFromCenter * GRID_DISTANCE) + GRID_OFFSET
+    };
   }
 }
 
