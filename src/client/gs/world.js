@@ -4,10 +4,7 @@ import { Player } from "../el/player";
 
 class World {
   constructor(game) {
-    this.grid = [];
-    for (let x = 0; x < NUM_CELLS; x++){
-      this.grid.push([]);
-    }
+    this.initializeEmptyGrid();
 
     // This will be refactored later when we have game state passed by websockets
     this.player = new Player(game, { x: 100, y: 100 });
@@ -19,12 +16,32 @@ class World {
     this.repeatMoveDelay = 100;
 
     // Player loc will be fixed to the middle later
-    this.playerLoc = { x: 1, y: 1 }
+    this.playerLoc = { x: 1, y: 1 };
 
     this.game = game;
   }
 
+  initializeEmptyGrid() {
+    this.grid = [];
+    for (let x = 0; x < NUM_CELLS; x++) {
+      this.grid.push([]);
+    }
+  }
+
+  emptyGrid(){
+    for (let x = 0; x < NUM_CELLS; x++) {
+      for (let y = 0; y < NUM_CELLS; y++) {
+        if (this.grid[x] && this.grid[x][y]) {
+          this.grid[x][y].destroy();
+          this.grid[x][y] = undefined;
+        }
+      }
+    }
+  }
+
   setState(jsonGameState) {
+    this.emptyGrid();
+
     self = this;
     Object.keys(jsonGameState.coordinates).forEach(function(coordString) {
       self.buildObjectFromCoord(coordString, jsonGameState)

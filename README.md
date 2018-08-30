@@ -15,7 +15,7 @@ install yarn
 - [x] create rocks on board
 - [x] collision detection from rocks
 - [x] Accept state from stubbed websockets
-- [ ] Override state from stubbed websockets 
+- [x] Override state from stubbed websockets 
 - [ ] move camera and get new state
 - [ ] add in coin
 - [ ] send player move over websockets

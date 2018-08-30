@@ -23,6 +23,10 @@ class Player {
       this.sprite.x += GRID_DISTANCE;
     }
   }
+
+  destroy() {
+    this.sprite.destroy();
+  }
 }
 
 export { Player };

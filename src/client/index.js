@@ -153,7 +153,6 @@ function create() {
 
   this.world.setState(stubbedJsonGameState)
 
-
   stubbedJsonGameState = {
     loadedLocation: "0,0",
     coordinates: {
