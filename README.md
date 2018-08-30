@@ -17,7 +17,7 @@ install yarn
 - [x] Accept state from stubbed websockets
 - [x] Override state from stubbed websockets 
 - [x] move camera and get new state
-- [ ] add in coin
+- [x] add in coin
 - [ ] send player move over websockets
 - [ ] receive state from websockets
 - [ ] fix bug where lots of players start showing up
