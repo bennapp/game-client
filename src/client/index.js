@@ -27,9 +27,7 @@ var config = {
   } 
 };
 
-var game = new Phaser.Game(config);
-var player;
-var cam;
+new Phaser.Game(config);
 var world;
 
 function preload() {
@@ -37,7 +35,7 @@ function preload() {
   this.load.image('ship', 'assets/spaceShips_001.png');
   this.load.image('otherPlayer', 'assets/enemyBlack5.png');
   this.load.image('star', 'assets/star_gold.png');
-  this.load.spritesheet('rocks', 'assets/sprites/Rock Pile.png', {frameWidth: 192, frameHeight: 192});
+  this.load.image('rocks', 'assets/sprites/Rock Pile.png');
 }
 
 function create() {

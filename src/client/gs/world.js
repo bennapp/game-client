@@ -1,4 +1,3 @@
-import { Player } from "../el/player";
 import { MapStore } from './map-store'
 
 class World {
@@ -65,10 +64,11 @@ class World {
         this.globalPlayerLocation.x += nextPosition.x;
         this.globalPlayerLocation.y += nextPosition.y;
 
-        this.moveAllWorldObjects();
+        this.updateObjectRenderLocations();
 
         this.lastMoveTime = time;
 
+        // This is where 'interactions' happen
         if (nextObject && nextObject.type == 'coin') {
           nextObject.destroy();
         }
@@ -78,7 +78,7 @@ class World {
     }
   }
 
-  moveAllWorldObjects() {
+  updateObjectRenderLocations() {
     for (let coordString in this.mapStore.store) {
       let object = this.mapStore.store[coordString];
       object.setNewLocation(this.globalPlayerLocation);
