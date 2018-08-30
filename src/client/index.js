@@ -90,10 +90,6 @@ function create() {
     // }, null, self);
   });
 
-  self.updateGameState = (jsonGameState) => {
-    self.loadedLocation = jsonGameState['loadedLocation'];
-  };
-
   self.gameStateUpdate = (rawGameState) => {
     let jsonGameState = JSON.parse(rawGameState);
     this.world.setState(jsonGameState);
@@ -102,15 +98,15 @@ function create() {
   this.socket.on('stateUpdate', self.gameStateUpdate);
 
   let stubbedJsonGameState = {
-    loadedLocation: {
-      x: '51',
-      y: '56'
+    globalPlayerLocation: {
+      x: '2',
+      y: '2',
     },
     coordinates: {
       // "0,1": { type: 'coin', id: '33' },
       // "0,2": { type: 'player', id: '1' },
-      "0,0": { type: 'rock', id: '-1' },
-      "2,2": { type: 'rock', id: '-1' },
+      "3,4": { type: 'rock', id: '-1' },
+      "1,1": { type: 'rock', id: '-1' },
     },
     objects: {
       // player: {
@@ -141,14 +137,9 @@ function create() {
   this.world.setState(stubbedJsonGameState)
 
   stubbedJsonGameState = {
-    loadedLocation: {
-      x: '51',
-      y: '56'
-    },
     coordinates: {
-      "0,0": { type: 'rock', id: '-1' },
-      "3,2": { type: 'rock', id: '-1' },
-      "2,4": { type: 'rock', id: '-1' },
+      "4,4": { type: 'rock', id: '-1' },
+      "3,4": { type: 'rock', id: '-1' },
     },
     objects: {
       rock: {
@@ -160,18 +151,13 @@ function create() {
   this.world.setState(stubbedJsonGameState)
 
   stubbedJsonGameState = {
-    loadedLocation: {
-      x: '52',
-      y: '57'
-    },
     globalPlayerLocation: {
-      x: '55',
-      y: '60',
+      x: '3',
+      y: '3',
     },
     coordinates: {
-      "0,0": { type: 'rock', id: '-1' },
-      "3,2": { type: 'rock', id: '-1' },
-      "2,4": { type: 'rock', id: '-1' },
+      "4,4": { type: 'rock', id: '-1' },
+      "3,4": { type: 'rock', id: '-1' },
     },
     objects: {
       rock: {
@@ -179,7 +165,6 @@ function create() {
       }
     },
   };
-
   this.world.setState(stubbedJsonGameState)
 }
 
