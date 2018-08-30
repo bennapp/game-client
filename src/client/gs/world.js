@@ -42,7 +42,7 @@ class World {
     return true;
   }
 
-  move(player, time, direction) {
+  move(player, time, direction, socket) {
     if (time > (this.lastMoveTime + this.repeatMoveDelay)) {
       var nextPosition = { x: 0, y: 0 };
 
@@ -70,10 +70,12 @@ class World {
         this.moveAllWorldObjects();
 
         this.lastMoveTime = time;
-      }
 
-      if (nextObject && nextObject.type == 'coin') {
-        nextObject.destroy();
+        if (nextObject && nextObject.type == 'coin') {
+          nextObject.destroy();
+        }
+
+        socket.emit('playerMovement', this.globalPlayerLocation);
       }
     }
   }

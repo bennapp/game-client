@@ -12,18 +12,6 @@ class Player {
     }
   }
 
-  move(direction) {
-    if(direction === 'up'){
-      this.sprite.y -= GRID_DISTANCE;
-    } else if(direction === 'left') {
-      this.sprite.x -= GRID_DISTANCE;
-    } else if(direction === 'down') {
-      this.sprite.y += GRID_DISTANCE;
-    } else if(direction === 'right') {
-      this.sprite.x += GRID_DISTANCE;
-    }
-  }
-
   destroy() {
     this.sprite.destroy();
   }

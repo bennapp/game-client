@@ -207,19 +207,7 @@ function update(time, delta) {
     }
 
     if (direction) {
-      this.world.move(this.ship, time, direction);
+      this.world.move(this.ship, time, direction, this.socket);
     }
-
-    // emit player movement
-    var x = this.ship.x;
-    var y = this.ship.y;
-    if (this.ship.oldPosition && (x !== this.ship.oldPosition.x || y !== this.ship.oldPosition.y)) {
-      this.socket.emit('playerMovement', { x: this.ship.x, y: this.ship.y });
-    }
-    // save old position data
-    this.ship.oldPosition = {
-      x: this.ship.x,
-      y: this.ship.y,
-    };
   }
 }
