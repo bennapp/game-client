@@ -16,8 +16,8 @@ install yarn
 - [x] collision detection from rocks
 - [x] Accept state from stubbed websockets
 - [x] Override state from stubbed websockets 
-- [ ] move camera and get new state
+- [x] move camera and get new state
 - [ ] add in coin
 - [ ] send player move over websockets
-- [ ] recieve state from websockets
+- [ ] receive state from websockets
 - [ ] fix bug where lots of players start showing up
